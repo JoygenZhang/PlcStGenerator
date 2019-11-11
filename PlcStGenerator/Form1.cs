@@ -16,6 +16,8 @@ namespace PlcStGenerator
         public Form1()
         {
             InitializeComponent();
+
+            StGenerator.IsWorks3 = true;
         }
 
         private void Button1_Click(object sender, EventArgs e)
@@ -256,6 +258,20 @@ namespace PlcStGenerator
             Clipboard.SetText(codes.ToString());
 
             Paste2(ref dataGridView2);
+        }
+
+        private void radioButton2_CheckedChanged(object sender, EventArgs e)
+        {
+            var rb = sender as RadioButton;
+            if (rb.Checked)
+                StGenerator.IsWorks3 = false;
+        }
+
+        private void radioButton1_CheckedChanged(object sender, EventArgs e)
+        {
+            var rb = sender as RadioButton;
+            if (rb.Checked)
+                StGenerator.IsWorks3 = true;
         }
     }
 }

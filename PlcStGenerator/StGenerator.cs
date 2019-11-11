@@ -8,6 +8,8 @@ namespace PlcStGenerator
 {
     public class StGenerator
     {
+        public static bool IsWorks3 { get; set; }
+
         private static StringBuilder _sb = new StringBuilder();
 
         public static StringBuilder BuildProgs(List<DeclareData> datas)
@@ -258,15 +260,65 @@ namespace PlcStGenerator
         {
             const string tabChar = "\t";
             const string varGlobal = "VAR_GLOBAL";
-            return
+
+            string result = string.Empty;
+
+            if (IsWorks3)
+            {
+                result = 
                     item.Prefix +
                     item.Group +
                     item.Name +
                     item.Postfix +
                     tabChar +
-                    item.Type +
+                    //item.Type +
+                    GenRealDataType(item.Type) + 
                     tabChar +
                     varGlobal;
+            }
+            else
+            {
+                result =
+                    varGlobal +
+                    tabChar +
+                    item.Prefix +
+                    item.Group +
+                    item.Name +
+                    item.Postfix +
+                    tabChar +
+                    //item.Type;
+                    GenRealDataType(item.Type)
+                    ;
+            }
+            return result;
+        }
+
+        private static string GenRealDataType(PlcVarType src)
+        {
+            var result = string.Empty;
+
+            if (IsWorks3)
+            {
+                result = src.ToString();
+            }
+            else
+            {
+                switch (src)
+                {
+                    case PlcVarType.Word:
+                        result = "Word[Signed]";
+                        break;
+                    //case PlcVarType.Dword:
+                    //    break;
+                    //case PlcVarType.Float:
+                    //    break;
+                    default:
+                        result = src.ToString();
+                        break;
+                }
+
+            }
+                return result;
         }
 
         public static StringBuilder BuildGroupDeclares(List<string> datas)
