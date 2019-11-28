@@ -51,6 +51,9 @@
             this.panel1 = new System.Windows.Forms.Panel();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.radioButton2 = new System.Windows.Forms.RadioButton();
+            this.panel2 = new System.Windows.Forms.Panel();
+            this.radioButton3 = new System.Windows.Forms.RadioButton();
+            this.radioButton4 = new System.Windows.Forms.RadioButton();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.tabControl1.SuspendLayout();
             this.tabPage2.SuspendLayout();
@@ -67,6 +70,7 @@
             this.splitContainer2.SuspendLayout();
             this.panel1.SuspendLayout();
             this.groupBox2.SuspendLayout();
+            this.panel2.SuspendLayout();
             this.SuspendLayout();
             // 
             // txtDeclare
@@ -77,25 +81,25 @@
             this.txtDeclare.Multiline = true;
             this.txtDeclare.Name = "txtDeclare";
             this.txtDeclare.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.txtDeclare.Size = new System.Drawing.Size(406, 363);
+            this.txtDeclare.Size = new System.Drawing.Size(406, 364);
             this.txtDeclare.TabIndex = 2;
             // 
             // txtProg
             // 
-            this.txtProg.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.txtProg.Location = new System.Drawing.Point(3, 26);
+            this.txtProg.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.txtProg.Location = new System.Drawing.Point(3, 91);
             this.txtProg.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.txtProg.Multiline = true;
             this.txtProg.Name = "txtProg";
             this.txtProg.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.txtProg.Size = new System.Drawing.Size(579, 368);
+            this.txtProg.Size = new System.Drawing.Size(579, 304);
             this.txtProg.TabIndex = 6;
             // 
             // btnCopyDeclare
             // 
             this.btnCopyDeclare.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.btnCopyDeclare.Font = new System.Drawing.Font("新細明體", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(136)));
-            this.btnCopyDeclare.Location = new System.Drawing.Point(0, 393);
+            this.btnCopyDeclare.Location = new System.Drawing.Point(0, 394);
             this.btnCopyDeclare.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.btnCopyDeclare.Name = "btnCopyDeclare";
             this.btnCopyDeclare.Size = new System.Drawing.Size(412, 103);
@@ -108,7 +112,7 @@
             // 
             this.btnCopyProg.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.btnCopyProg.Font = new System.Drawing.Font("新細明體", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(136)));
-            this.btnCopyProg.Location = new System.Drawing.Point(3, 394);
+            this.btnCopyProg.Location = new System.Drawing.Point(3, 395);
             this.btnCopyProg.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.btnCopyProg.Name = "btnCopyProg";
             this.btnCopyProg.Size = new System.Drawing.Size(579, 98);
@@ -152,7 +156,7 @@
             this.tabControl1.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(1001, 427);
+            this.tabControl1.Size = new System.Drawing.Size(1001, 426);
             this.tabControl1.TabIndex = 15;
             // 
             // tabPage2
@@ -166,7 +170,7 @@
             this.tabPage2.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.tabPage2.Size = new System.Drawing.Size(993, 395);
+            this.tabPage2.Size = new System.Drawing.Size(993, 394);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Type Code";
             this.tabPage2.UseVisualStyleBackColor = true;
@@ -280,12 +284,14 @@
             this.radioButton1.Name = "radioButton1";
             this.radioButton1.Size = new System.Drawing.Size(111, 22);
             this.radioButton1.TabIndex = 16;
+            this.radioButton1.TabStop = true;
             this.radioButton1.Text = "Gx Works3";
             this.radioButton1.UseVisualStyleBackColor = true;
             this.radioButton1.CheckedChanged += new System.EventHandler(this.radioButton1_CheckedChanged);
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.panel2);
             this.groupBox1.Controls.Add(this.txtProg);
             this.groupBox1.Controls.Add(this.btnCopyProg);
             this.groupBox1.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -293,7 +299,7 @@
             this.groupBox1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Padding = new System.Windows.Forms.Padding(3, 4, 3, 4);
-            this.groupBox1.Size = new System.Drawing.Size(585, 496);
+            this.groupBox1.Size = new System.Drawing.Size(585, 497);
             this.groupBox1.TabIndex = 17;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Code";
@@ -314,7 +320,7 @@
             // 
             this.splitContainer1.Panel2.Controls.Add(this.splitContainer2);
             this.splitContainer1.Size = new System.Drawing.Size(1001, 928);
-            this.splitContainer1.SplitterDistance = 427;
+            this.splitContainer1.SplitterDistance = 426;
             this.splitContainer1.SplitterWidth = 5;
             this.splitContainer1.TabIndex = 19;
             // 
@@ -332,7 +338,7 @@
             // splitContainer2.Panel2
             // 
             this.splitContainer2.Panel2.Controls.Add(this.groupBox1);
-            this.splitContainer2.Size = new System.Drawing.Size(1001, 496);
+            this.splitContainer2.Size = new System.Drawing.Size(1001, 497);
             this.splitContainer2.SplitterDistance = 412;
             this.splitContainer2.TabIndex = 0;
             // 
@@ -344,7 +350,7 @@
             this.panel1.Location = new System.Drawing.Point(0, 0);
             this.panel1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(412, 496);
+            this.panel1.Size = new System.Drawing.Size(412, 497);
             this.panel1.TabIndex = 20;
             // 
             // groupBox2
@@ -357,7 +363,7 @@
             this.groupBox2.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Padding = new System.Windows.Forms.Padding(3, 4, 3, 4);
-            this.groupBox2.Size = new System.Drawing.Size(412, 393);
+            this.groupBox2.Size = new System.Drawing.Size(412, 394);
             this.groupBox2.TabIndex = 17;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Declares";
@@ -373,6 +379,39 @@
             this.radioButton2.Text = "Gx Works2";
             this.radioButton2.UseVisualStyleBackColor = true;
             this.radioButton2.CheckedChanged += new System.EventHandler(this.radioButton2_CheckedChanged);
+            // 
+            // panel2
+            // 
+            this.panel2.Controls.Add(this.radioButton4);
+            this.panel2.Controls.Add(this.radioButton3);
+            this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panel2.Location = new System.Drawing.Point(3, 26);
+            this.panel2.Name = "panel2";
+            this.panel2.Size = new System.Drawing.Size(579, 65);
+            this.panel2.TabIndex = 12;
+            // 
+            // radioButton3
+            // 
+            this.radioButton3.AutoSize = true;
+            this.radioButton3.Checked = true;
+            this.radioButton3.Location = new System.Drawing.Point(33, 23);
+            this.radioButton3.Name = "radioButton3";
+            this.radioButton3.Size = new System.Drawing.Size(115, 22);
+            this.radioButton3.TabIndex = 0;
+            this.radioButton3.Text = "AssignStyle";
+            this.radioButton3.UseVisualStyleBackColor = true;
+            this.radioButton3.CheckedChanged += new System.EventHandler(this.radioButton3_CheckedChanged);
+            // 
+            // radioButton4
+            // 
+            this.radioButton4.AutoSize = true;
+            this.radioButton4.Location = new System.Drawing.Point(232, 21);
+            this.radioButton4.Name = "radioButton4";
+            this.radioButton4.Size = new System.Drawing.Size(127, 22);
+            this.radioButton4.TabIndex = 1;
+            this.radioButton4.Text = "FunctionStyle";
+            this.radioButton4.UseVisualStyleBackColor = true;
+            this.radioButton4.CheckedChanged += new System.EventHandler(this.radioButton4_CheckedChanged);
             // 
             // Form1
             // 
@@ -403,6 +442,8 @@
             this.panel1.ResumeLayout(false);
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
+            this.panel2.ResumeLayout(false);
+            this.panel2.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -431,6 +472,9 @@
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.RadioButton radioButton2;
+        private System.Windows.Forms.Panel panel2;
+        private System.Windows.Forms.RadioButton radioButton4;
+        private System.Windows.Forms.RadioButton radioButton3;
     }
 }
 

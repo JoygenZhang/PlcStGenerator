@@ -273,5 +273,19 @@ namespace PlcStGenerator
             if (rb.Checked)
                 StGenerator.IsWorks3 = true;
         }
+
+        private void radioButton3_CheckedChanged(object sender, EventArgs e)
+        {
+            var rb = sender as RadioButton;
+            if (rb.Checked)
+                StGenerator.BooleanAssignStyle = false;
+        }
+
+        private void radioButton4_CheckedChanged(object sender, EventArgs e)
+        {
+            var rb = sender as RadioButton;
+            if (rb.Checked)
+                StGenerator.BooleanAssignStyle = true;
+        }
     }
 }

@@ -9,6 +9,7 @@ namespace PlcStGenerator
     public class StGenerator
     {
         public static bool IsWorks3 { get; set; }
+        public static bool BooleanAssignStyle { get; set; }
 
         private static StringBuilder _sb = new StringBuilder();
 
@@ -45,11 +46,11 @@ namespace PlcStGenerator
                 foreach (var item in group)
                 {
                     var gVar = "g" + item.Group + item.Name;
-                    _sb.AppendLine("    " + gVar + " := FALSE;");
+                    _sb.Append("    ").AppendLine(GenBooleanAssign(gVar, false));
                 }
 
                 _sb.AppendLine();
-                _sb.AppendLine("    " + uiVar + " := FALSE;");
+                _sb.AppendLine("    " + GenBooleanAssign(uiVar, false));
                 _sb.AppendLine("END_IF;");
                 _sb.AppendLine();
             }
@@ -59,7 +60,7 @@ namespace PlcStGenerator
             foreach (var item in datas)
             {
                 var cyVar = "cy" + item.Group + item.Name;
-                if (item.Type != PlcVarType.FbCylinder2x1y) 
+                if (item.Type != PlcVarType.FbCylinder2x1y)
                     continue;
 
                 _sb.AppendLine("IF " + cyVar + ".oErr THEN");
@@ -118,7 +119,11 @@ namespace PlcStGenerator
                     case PlcVarType.FbCylinder0x1y:
                         _sb.AppendLine(cyVar + "(");
                         _sb.AppendLine("    iAct := " + gVar + comma);
-                        _sb.AppendLine("    oDevice =>" + yVar + comma);
+                        if (IsWorks3)
+                            _sb.AppendLine("    oDevice =>" + yVar + comma);
+                        else
+                            _sb.AppendLine("    oDevice := " + yVar + comma);
+
                         _sb.AppendLine("    iOnDelay := " + onVar + comma);
                         _sb.AppendLine("    iOffDelay := " + offVar + ");");
                         break;
@@ -127,7 +132,11 @@ namespace PlcStGenerator
                         _sb.AppendLine("    iAct := " + gVar + comma);
                         _sb.AppendLine("    iRst := gResetAlarm,");
                         _sb.AppendLine("    iLimit1 := " + x1Var + comma);
-                        _sb.AppendLine("    oDevice =>" + yVar + comma);
+                        if (IsWorks3)
+                            _sb.AppendLine("    oDevice =>" + yVar + comma);
+                        else
+                            _sb.AppendLine("    oDevice := " + yVar + comma);
+
                         _sb.AppendLine("    iOnTO := " + timeoutVar + comma);
                         _sb.AppendLine("    iOffTO := " + timeoutVar + comma);
                         _sb.AppendLine("    iOnDelay := " + onVar + comma);
@@ -139,7 +148,12 @@ namespace PlcStGenerator
                         _sb.AppendLine("    iRst := gResetAlarm,");
                         _sb.AppendLine("    iLimit1 := " + x1Var + comma);
                         _sb.AppendLine("    iLimit2 := " + x2Var + comma);
-                        _sb.AppendLine("    oDevice =>" + yVar + comma);
+
+                        if (IsWorks3)
+                            _sb.AppendLine("    oDevice =>" + yVar + comma);
+                        else
+                            _sb.AppendLine("    oDevice := " + yVar + comma);
+
                         _sb.AppendLine("    iOnTO := " + timeoutVar + comma);
                         _sb.AppendLine("    iOffTO := " + timeoutVar + comma);
                         _sb.AppendLine("    iOnDelay := " + onVar + comma);
@@ -265,14 +279,14 @@ namespace PlcStGenerator
 
             if (IsWorks3)
             {
-                result = 
+                result =
                     item.Prefix +
                     item.Group +
                     item.Name +
                     item.Postfix +
                     tabChar +
                     //item.Type +
-                    GenRealDataType(item.Type) + 
+                    GenRealDataType(item.Type) +
                     tabChar +
                     varGlobal;
             }
@@ -407,6 +421,25 @@ namespace PlcStGenerator
                     varGlobal;
         }
 
+        private static string GenBooleanAssign(string source, bool type)
+        {
+            if (!BooleanAssignStyle)
+            {
+                return source + " := " + type.ToString().ToUpper();
+            }
+            else
+            {
+                if (type == false)
+                {
+                    return "RST(TRUE, " + source + ");";
+                }
+                else
+                {
+                    return "SET(TRUE, " + source + ");";
+                }
+            }
+        }
+
         public static StringBuilder BuildGroupProgs(List<DeclareData> datas)
         {
             var groups =
@@ -424,9 +457,11 @@ namespace PlcStGenerator
             {
                 _sb.AppendLine();
                 _sb.AppendLine("IF auto" + item + "Cycle THEN");
-                _sb.AppendLine("    " + item + "Cycle := TRUE;");
+
+                _sb.AppendLine("    " + GenBooleanAssign(item + "Cycle", true));
                 _sb.AppendLine("    w" + item + "Index := START_STEP;");
-                _sb.AppendLine("    auto" + item + "Cycle := FALSE;");
+
+                _sb.AppendLine("    " + GenBooleanAssign("auto" + item + "Cycle", false));
                 _sb.AppendLine("END_IF;");
             }
 
@@ -467,13 +502,13 @@ namespace PlcStGenerator
                 _sb.AppendLine("IF " + item + "Cycle THEN");
                 _sb.AppendLine("    IF " + item + "GoNext AND " + item + "CanGoNext THEN");
                 _sb.AppendLine("        w" + item + "Index := w" + item + "Index + 10;");
-                _sb.AppendLine("        " + item + "GoNext := FALSE;");
+                _sb.AppendLine("        " + GenBooleanAssign(item + "GoNext", false));
                 _sb.AppendLine("    END_IF;");
                 _sb.AppendLine();
                 _sb.AppendLine("    IF " + item + "GoNg THEN");
                 _sb.AppendLine("        w" + item + "LastIndex := w" + item + "Index;");
                 _sb.AppendLine("        w" + item + "Index := NG_STEP;");
-                _sb.AppendLine("        " + item + "GoNg := FALSE;");
+                _sb.AppendLine("        " + GenBooleanAssign(item + "GoNg", false));
                 _sb.AppendLine("    END_IF;");
                 _sb.AppendLine("END_IF;");
             }
@@ -497,7 +532,7 @@ namespace PlcStGenerator
             _sb.AppendLine();
             _sb.AppendLine("IF " + group + "Cycle THEN");
             _sb.AppendLine("    IF w" + group + "Index = OK_STEP THEN");
-            _sb.AppendLine("        " + group + "Cycle := FALSE;");
+            _sb.AppendLine("        " + GenBooleanAssign(group + "Cycle", false));
             _sb.AppendLine("        w" + group + "Index := 0");
             _sb.AppendLine();
             _sb.AppendLine("    ELSIF w" + group + "Index = NG_STEP THEN");
@@ -513,34 +548,35 @@ namespace PlcStGenerator
             foreach (var item in actList)
             {
                 _sb.AppendLine("    " + idx.ToString() + ":");
-                if (item.Act.ToUpper() == "ON")
+                if (string.Equals(item.Act, "ON", StringComparison.OrdinalIgnoreCase))
                 {
                     _sb.Append(tabChar);
-                    _sb.AppendLine("    g" + group + item.Name + " := TRUE;");
+                    _sb.AppendLine("    " + GenBooleanAssign("g" + group + item.Name, true));
+
                     _sb.Append(tabChar);
                     _sb.AppendLine("    IF cy" + group + item.Name + ".oOn THEN");
                     _sb.Append(tabChar);
-                    _sb.AppendLine("        " + group + "GoNext := TRUE;");
+                    _sb.AppendLine("        " + GenBooleanAssign(group + "GoNext", true));
 
                     _sb.Append(tabChar);
                     _sb.AppendLine("    ELSIF cy" + group + item.Name + ".oErr THEN");
                     _sb.Append(tabChar);
-                    _sb.AppendLine("        " + group + "GoNg := TRUE;");
+                    _sb.AppendLine("        " + GenBooleanAssign(group + "GoNg", true));
                     _sb.Append(tabChar);
                     _sb.AppendLine("    END_IF;");
                 }
-                else if (item.Act.ToUpper() == "OFF")
+                else if (string.Equals(item.Act, "OFF", StringComparison.OrdinalIgnoreCase))
                 {
                     _sb.Append(tabChar);
-                    _sb.AppendLine("    g" + group + item.Name + " := FALSE;");
+                    _sb.AppendLine("    " + GenBooleanAssign("g" + group + item.Name, false));
                     _sb.Append(tabChar);
                     _sb.AppendLine("    IF cy" + group + item.Name + ".oOff THEN");
                     _sb.Append(tabChar);
-                    _sb.AppendLine("        " + group + "GoNext := TRUE;");
+                    _sb.AppendLine("        " + GenBooleanAssign(group + "GoNext", true));
                     _sb.Append(tabChar);
                     _sb.AppendLine("    ELSIF cy" + group + item.Name + ".oErr THEN");
                     _sb.Append(tabChar);
-                    _sb.AppendLine("        " + group + "GoNg := TRUE;");
+                    _sb.AppendLine("        " + GenBooleanAssign(group + "GoNg", true));
                     _sb.Append(tabChar);
                     _sb.AppendLine("    END_IF;");
                 }
