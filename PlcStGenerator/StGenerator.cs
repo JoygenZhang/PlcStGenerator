@@ -561,12 +561,12 @@ namespace PlcStGenerator
             _sb.AppendLine("IF " + group + "Cycle THEN");
             _sb.AppendLine("    IF w" + group + "Index = OK_STEP THEN");
             _sb.AppendLine("        " + GenBooleanAssign(group + "Cycle", false));
-            _sb.AppendLine("        w" + group + "Index := 0");
+            _sb.AppendLine("        w" + group + "Index := 0;");
             _sb.AppendLine();
             _sb.AppendLine("    ELSIF w" + group + "Index = NG_STEP THEN");
             _sb.AppendLine("        IF " + group + "CanGoNext THEN");
             _sb.AppendLine("            w" + group + "Index := w" + group + "LastIndex;");
-            _sb.AppendLine("            w" + group + "Index := 0;");
+            _sb.AppendLine("            w" + group + "LastIndex := 0;");
             _sb.AppendLine("        END_IF;");
             _sb.AppendLine("    END_IF;");
             _sb.AppendLine();
