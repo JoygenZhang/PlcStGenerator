@@ -1,8 +1,8 @@
 # PlcStGenerator 
 
-Screen: 
+Generate code:
+![GenCode](/PlcStGenerator/Assets/Demo_PlcStGenerator1.gif?raw=true "Gen Code")
 
-![GenCode](/PlcStGenerator/Assets/Demo_PlcStGenerator - 1.gif?raw=true "Gen Code")
-
-![GenWorkFlow](/PlcStGenerator/Assets/Demo_PlcStGenerator - 2.gif?raw=true "Gen WorkFlow")
+Generate WorkFlow:
+![GenWorkFlow](/PlcStGenerator/Assets/Demo_PlcStGenerator2.gif?raw=true "Gen WorkFlow")
 

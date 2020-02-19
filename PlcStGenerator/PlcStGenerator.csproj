@@ -92,8 +92,8 @@
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Assets\Demo_PlcStGenerator - 1.gif" />
-    <Content Include="Assets\Demo_PlcStGenerator - 2.gif" />
+    <Content Include="Assets\Demo_PlcStGenerator1.gif" />
+    <Content Include="Assets\Demo_PlcStGenerator2.gif" />
     <Content Include="RotateTable.tt">
       <Generator>TextTemplatingFilePreprocessor</Generator>
       <LastGenOutput>RotateTable.cs</LastGenOutput>
