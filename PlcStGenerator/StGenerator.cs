@@ -19,7 +19,7 @@ namespace PlcStGenerator
             const string comma = ",";
 
             _sb.AppendLine();
-            _sb.AppendLine("// ui command");
+            _sb.AppendLine("(* ui command *)");
 
             var groups = datas
                 .OrderBy(x => x.Group)
@@ -60,7 +60,7 @@ namespace PlcStGenerator
             }
 
             _sb.AppendLine();
-            _sb.AppendLine("// error handling");
+            _sb.AppendLine("(* error handling *)");
             foreach (var item in datas)
             {
                 var cyVar = "cy" + item.Group + item.Name;
@@ -68,9 +68,19 @@ namespace PlcStGenerator
                     continue;
 
                 _sb.AppendLine("IF " + cyVar + ".oErr THEN");
-                _sb.AppendLine("    SET(" + cyVar + ".oErrId = ErrCyOn, F50);");
-                _sb.AppendLine("    SET(" + cyVar + ".oErrId = ErrCyOff, F50);");
-                _sb.AppendLine("    SET(" + cyVar + ".oErrId = ErrCyBoth, F50);");
+                if (IsWorks3)
+                {
+                    _sb.AppendLine("    SET(" + cyVar + ".oErrId = ErrCyOn, F50);");
+                    _sb.AppendLine("    SET(" + cyVar + ".oErrId = ErrCyOff, F50);");
+                    _sb.AppendLine("    SET(" + cyVar + ".oErrId = ErrCyBoth, F50);");
+                }
+                else
+                {
+                    _sb.AppendLine("    SET(" + cyVar + ".oErrId = ErrCyOn, S900);");
+                    _sb.AppendLine("    SET(" + cyVar + ".oErrId = ErrCyOff, S900);");
+                    _sb.AppendLine("    SET(" + cyVar + ".oErrId = ErrCyBoth, S900);");
+                }
+
                 _sb.AppendLine("END_IF;");
 
                 _sb.AppendLine();
@@ -78,33 +88,37 @@ namespace PlcStGenerator
 
             _sb.AppendLine();
             _sb.AppendLine("(* error messages");
+
+            var str = string.Empty;
             foreach (var item in datas)
             {
                 switch (item.Type)
                 {
                     case PlcVarType.FbCylinder1x1y:
-                        {
-                            var str = item.Group.ToUpper() + " \"" + item.Name + "\" on state abnormal.";
-                            _sb.AppendLine(str);
-                            break;
-                        }
-                    case PlcVarType.FbCylinder2x1y:
-                        {
-                            var str = item.Group.ToUpper() + " \"" + item.Name + "\" on state abnormal.";
-                            var str2 = item.Group.ToUpper() + " \"" + item.Name + "\" off state abnormal.";
-                            var str3 = item.Group.ToUpper() + " \"" + item.Name + "\" sensor state abnormal.";
+                        str = item.Group.ToUpper() + " \"" + item.Name + "\" on state abnormal.";
+                        _sb.AppendLine(str);
+                        break;
 
-                            _sb.AppendLine(str);
-                            _sb.AppendLine(str2);
-                            _sb.AppendLine(str3);
-                            break;
-                        }
+                    case PlcVarType.FbVacuum:
+                        str = item.Group.ToUpper() + " \"" + item.Name + "\" vacuum state abnormal.";
+                        _sb.AppendLine(str);
+                        break;
+
+                    case PlcVarType.FbCylinder2x1y:
+                        str = item.Group.ToUpper() + " \"" + item.Name + "\" on state abnormal.";
+                        var str2 = item.Group.ToUpper() + " \"" + item.Name + "\" off state abnormal.";
+                        var str3 = item.Group.ToUpper() + " \"" + item.Name + "\" sensor state abnormal.";
+
+                        _sb.AppendLine(str);
+                        _sb.AppendLine(str2);
+                        _sb.AppendLine(str3);
+                        break;
                 }
             }
             _sb.AppendLine("error messages *)");
 
             _sb.AppendLine();
-            _sb.AppendLine("// cylinder function block control");
+            _sb.AppendLine("(* cylinder function block control *)");
 
             foreach (var item in datas)
             {
@@ -118,68 +132,83 @@ namespace PlcStGenerator
                 var offVar = "w" + item.Group + item.Name + "OffT";
                 var timeoutVar = "w" + item.Group + item.Name + "TO";
 
-                _sb.AppendLine("IF gSys.ManMode THEN");
-                _sb.AppendLine("    " + cyVar + ".iOnDelay := " + onVar + ";");
-                _sb.AppendLine("    " + cyVar + ".iOffDelay := " + offVar + ";");
+                //if (item.Type != PlcVarType.FbGripper && item.Type != PlcVarType.FbCylinder0x1y)
+                //{
+                //    _sb.AppendLine("IF gSys.ManMode THEN");
+                //    _sb.AppendLine("    " + cyVar + ".iOnDelay := " + onVar + ";");
+                //    _sb.AppendLine("    " + cyVar + ".iOffDelay := " + offVar + ";");
+                //}
 
-                switch (item.Type)
+                if (item.Type == PlcVarType.FbGripper || item.Type == PlcVarType.FbCylinder0x1y)
                 {
-                    case PlcVarType.FbCylinder0x1y:
-                        _sb.AppendLine("END_IF;");
-                        _sb.AppendLine();
+                    _sb.AppendLine(cyVar + "(");
+                    _sb.AppendLine("    iAct := " + gVar + comma);
+                    _sb.AppendLine("    iOnDelay := " + onVar + comma);
+                    _sb.AppendLine("    iOffDelay := " + offVar + comma);
 
-                        _sb.AppendLine(cyVar + "(");
-                        _sb.AppendLine("    iAct := " + gVar + comma);
-                        if (IsWorks3)
-                            _sb.AppendLine("    oDevice =>" + yVar + ");");
-                        else
-                            _sb.AppendLine("    oDevice := " + yVar + ");");
+                    if (IsWorks3)
+                        _sb.AppendLine("    oDevice =>" + yVar + ");");
+                    else
+                        _sb.AppendLine("    oDevice := " + yVar + ");");
 
-                        //_sb.AppendLine("    iOnDelay := " + onVar + comma);
-                        //_sb.AppendLine("    iOffDelay := " + offVar + ");");
-                        break;
-                    case PlcVarType.FbCylinder1x1y:
-                        _sb.AppendLine("    " + cyVar + ".iOnTO := " + timeoutVar + ";");
-                        _sb.AppendLine("    " + cyVar + ".iOffTO := " + timeoutVar + ";");
-                        _sb.AppendLine("END_IF;");
-                        _sb.AppendLine();
+                }
+                else if (item.Type == PlcVarType.FbVacuum || item.Type == PlcVarType.FbCylinder1x1y)
+                {
+                    //if (item.Type == PlcVarType.FbCylinder1x1y)
+                    //{
+                    //    _sb.AppendLine("    " + cyVar + ".iOnTO := " + timeoutVar + ";");
+                    //    _sb.AppendLine("    " + cyVar + ".iOffTO := " + timeoutVar + ";");
+                    //}
+                    //else
+                    //{
+                    //    _sb.AppendLine("    " + cyVar + ".iTO := " + timeoutVar + ";");
+                    //}
+                    //_sb.AppendLine("END_IF;");
+                    //_sb.AppendLine();
 
-                        _sb.AppendLine(cyVar + "(");
-                        _sb.AppendLine("    iAct := " + gVar + comma);
-                        _sb.AppendLine("    iRst := gResetAlarm,");
-                        _sb.AppendLine("    iLimit1 := " + x1Var + comma);
-                        if (IsWorks3)
-                            _sb.AppendLine("    oDevice =>" + yVar + ");");
-                        else
-                            _sb.AppendLine("    oDevice := " + yVar + ");");
+                    _sb.AppendLine(cyVar + "(");
+                    _sb.AppendLine("    iAct := " + gVar + comma);
+                    _sb.AppendLine("    iRst := gResetAlarm,");
+                    _sb.AppendLine("    iLimit1 := " + x1Var + comma);
 
-                        //_sb.AppendLine("    iOnTO := " + timeoutVar + comma);
-                        //_sb.AppendLine("    iOffTO := " + timeoutVar + comma);
-                        //_sb.AppendLine("    iOnDelay := " + onVar + comma);
-                        //_sb.AppendLine("    iOffDelay := " + offVar + ");");
-                        break;
-                    case PlcVarType.FbCylinder2x1y:
-                        _sb.AppendLine("    " + cyVar + ".iOnTO := " + timeoutVar + ";");
-                        _sb.AppendLine("    " + cyVar + ".iOffTO := " + timeoutVar + ";");
-                        _sb.AppendLine("END_IF;");
-                        _sb.AppendLine();
+                    _sb.AppendLine("    iOnDelay := " + onVar + comma);
+                    _sb.AppendLine("    iOffDelay := " + offVar + comma);
 
-                        _sb.AppendLine(cyVar + "(");
-                        _sb.AppendLine("    iAct := " + gVar + comma);
-                        _sb.AppendLine("    iRst := gResetAlarm,");
-                        _sb.AppendLine("    iLimit1 := " + x1Var + comma);
-                        _sb.AppendLine("    iLimit2 := " + x2Var + comma);
+                    if (item.Type == PlcVarType.FbCylinder1x1y)
+                    {
+                        _sb.AppendLine("    iOnTO := " + timeoutVar + comma);
+                        _sb.AppendLine("    iOffTO := " + timeoutVar + comma);
+                    }
+                    else
+                    {
+                        _sb.AppendLine("    iTO := " + timeoutVar + comma);
+                    }
 
-                        if (IsWorks3)
-                            _sb.AppendLine("    oDevice =>" + yVar + ");");
-                        else
-                            _sb.AppendLine("    oDevice := " + yVar + ");");
+                    if (IsWorks3)
+                        _sb.AppendLine("    oDevice =>" + yVar + ");");
+                    else
+                        _sb.AppendLine("    oDevice := " + yVar + ");");
+                }
+                else if (item.Type == PlcVarType.FbCylinder2x1y)
+                {
+                    //_sb.AppendLine("    " + cyVar + ".iOnTO := " + timeoutVar + ";");
+                    //_sb.AppendLine("    " + cyVar + ".iOffTO := " + timeoutVar + ";");
+                    //_sb.AppendLine("END_IF;");
+                    //_sb.AppendLine();
 
-                        //_sb.AppendLine("    iOnTO := " + timeoutVar + comma);
-                        //_sb.AppendLine("    iOffTO := " + timeoutVar + comma);
-                        //_sb.AppendLine("    iOnDelay := " + onVar + comma);
-                        //_sb.AppendLine("    iOffDelay := " + offVar + ");");
-                        break;
+                    _sb.AppendLine(cyVar + "(");
+                    _sb.AppendLine("    iAct := " + gVar + comma);
+                    _sb.AppendLine("    iRst := gResetAlarm,");
+                    _sb.AppendLine("    iLimit1 := " + x1Var + comma);
+                    _sb.AppendLine("    iLimit2 := " + x2Var + comma);
+                    _sb.AppendLine("    iOnTO := " + timeoutVar + comma);
+                    _sb.AppendLine("    iOffTO := " + timeoutVar + comma);
+                    _sb.AppendLine("    iOnDelay := " + onVar + comma);
+                    _sb.AppendLine("    iOffDelay := " + offVar + comma);
+                    if (IsWorks3)
+                        _sb.AppendLine("    oDevice =>" + yVar + ");");
+                    else
+                        _sb.AppendLine("    oDevice := " + yVar + ");");
                 }
 
                 _sb.AppendLine();
@@ -215,6 +244,13 @@ namespace PlcStGenerator
                         onDeclares.Add(GenOnDeclare(data));
                         offDeclares.Add(GenOffDeclare(data));
                         break;
+                    case PlcVarType.FbGripper:
+                        uiDeclares.Add(GenUiDeclare(data));
+                        yDeclares.Add(GenYDeclare(data));
+                        cyDeclares.Add(GenCyDeclare(data));
+                        onDeclares.Add(GenOnDeclare(data));
+                        offDeclares.Add(GenOffDeclare(data));
+                        break;
 
                     case PlcVarType.FbCylinder1x1y:
                         uiDeclares.Add(GenUiDeclare(data));
@@ -227,7 +263,17 @@ namespace PlcStGenerator
 
                         xOrgDeclares.Add(GenXOrgDeclare(data));
                         break;
+                    case PlcVarType.FbVacuum:
+                        uiDeclares.Add(GenUiDeclare(data));
+                        yDeclares.Add(GenYDeclare(data));
+                        cyDeclares.Add(GenCyDeclare(data));
 
+                        onDeclares.Add(GenOnDeclare(data));
+                        offDeclares.Add(GenOffDeclare(data));
+                        timeOutDeclares.Add(GenTimeOutDeclare(data));
+
+                        xOrgDeclares.Add(GenXOrgDeclare(data));
+                        break;
                     case PlcVarType.FbCylinder2x1y:
                         uiDeclares.Add(GenUiDeclare(data));
                         yDeclares.Add(GenYDeclare(data));
@@ -432,7 +478,11 @@ namespace PlcStGenerator
             const string tabChar = "\t";
             const string varGlobal = "VAR_GLOBAL";
 
-            return
+            var result = string.Empty;
+
+            if (IsWorks3)
+            {
+                result =
                     item.Prefix +
                     item.Group +
                     item.Postfix +
@@ -440,6 +490,20 @@ namespace PlcStGenerator
                     item.Type +
                     tabChar +
                     varGlobal;
+            }
+            else
+            {
+                result =
+                    varGlobal +
+                    tabChar +
+                    item.Prefix +
+                    item.Group +
+                    item.Postfix +
+                    tabChar +
+                    item.Type;
+            }
+
+            return result;
         }
 
         private static string GenBooleanAssign(string source, bool type)

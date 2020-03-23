@@ -17,6 +17,9 @@
         FbCylinder1x1y,
         FbCylinder2x1y,
 
+        FbGripper,
+        FbVacuum,
+
         FbRotateTable,
         FbPartsFeeder,
 
