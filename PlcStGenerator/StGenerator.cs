@@ -61,29 +61,42 @@ namespace PlcStGenerator
 
             _sb.AppendLine();
             _sb.AppendLine("(* error handling *)");
+
+            var idx = 0;
+            if (IsWorks3)
+            {
+                idx = 0;
+            }
+            else
+            {
+                idx = 900;
+            }
+
             foreach (var item in datas)
             {
                 var cyVar = "cy" + item.Group + item.Name;
                 if (item.Type != PlcVarType.FbCylinder2x1y)
                     continue;
 
-                _sb.AppendLine("IF " + cyVar + ".oErr THEN");
                 if (IsWorks3)
                 {
-                    _sb.AppendLine("    SET(" + cyVar + ".oErrId = ErrCyOn, F50);");
-                    _sb.AppendLine("    SET(" + cyVar + ".oErrId = ErrCyOff, F50);");
-                    _sb.AppendLine("    SET(" + cyVar + ".oErrId = ErrCyBoth, F50);");
+                    //_sb.AppendLine("IF " + cyVar + ".oErr THEN");
+                    //_sb.AppendLine("    SET(" + cyVar + ".oErrId = ErrCyOn, F50);");
+                    //_sb.AppendLine("    SET(" + cyVar + ".oErrId = ErrCyOff, F50);");
+                    //_sb.AppendLine("    SET(" + cyVar + ".oErrId = ErrCyBoth, F50);");
+                    //_sb.AppendLine("END_IF;");
+
+                    _sb.AppendLine("    SET(" + cyVar + ".oErr, F"+ idx++.ToString() +");");
+                    _sb.AppendLine();
                 }
                 else
                 {
-                    _sb.AppendLine("    SET(" + cyVar + ".oErrId = ErrCyOn, S900);");
-                    _sb.AppendLine("    SET(" + cyVar + ".oErrId = ErrCyOff, S900);");
-                    _sb.AppendLine("    SET(" + cyVar + ".oErrId = ErrCyBoth, S900);");
+                    _sb.AppendLine("    SET(" + cyVar + ".oErr, S"+ idx++.ToString() +");");
+
+                    //_sb.AppendLine("    SET(" + cyVar + ".oErrId = ErrCyOn, S900);");
+                    //_sb.AppendLine("    SET(" + cyVar + ".oErrId = ErrCyOff, S900);");
+                    //_sb.AppendLine("    SET(" + cyVar + ".oErrId = ErrCyBoth, S900);");
                 }
-
-                _sb.AppendLine("END_IF;");
-
-                _sb.AppendLine();
             }
 
             _sb.AppendLine();
@@ -95,7 +108,7 @@ namespace PlcStGenerator
                 switch (item.Type)
                 {
                     case PlcVarType.FbCylinder1x1y:
-                        str = item.Group.ToUpper() + " \"" + item.Name + "\" on state abnormal.";
+                        str = item.Group.ToUpper() + " \"" + item.Name + "\" state abnormal.";
                         _sb.AppendLine(str);
                         break;
 
@@ -105,13 +118,13 @@ namespace PlcStGenerator
                         break;
 
                     case PlcVarType.FbCylinder2x1y:
-                        str = item.Group.ToUpper() + " \"" + item.Name + "\" on state abnormal.";
-                        var str2 = item.Group.ToUpper() + " \"" + item.Name + "\" off state abnormal.";
-                        var str3 = item.Group.ToUpper() + " \"" + item.Name + "\" sensor state abnormal.";
+                        str = item.Group.ToUpper() + " \"" + item.Name + "\" state abnormal.";
+                        //var str2 = item.Group.ToUpper() + " \"" + item.Name + "\" off state abnormal.";
+                        //var str3 = item.Group.ToUpper() + " \"" + item.Name + "\" sensor state abnormal.";
 
                         _sb.AppendLine(str);
-                        _sb.AppendLine(str2);
-                        _sb.AppendLine(str3);
+                        //_sb.AppendLine(str2);
+                        //_sb.AppendLine(str3);
                         break;
                 }
             }
@@ -176,8 +189,8 @@ namespace PlcStGenerator
 
                     if (item.Type == PlcVarType.FbCylinder1x1y)
                     {
-                        _sb.AppendLine("    iOnTO := " + timeoutVar + comma);
-                        _sb.AppendLine("    iOffTO := " + timeoutVar + comma);
+                        _sb.AppendLine("    iTimeOut := " + timeoutVar + comma);
+                        //_sb.AppendLine("    iOffTO := " + timeoutVar + comma);
                     }
                     else
                     {
@@ -201,8 +214,8 @@ namespace PlcStGenerator
                     _sb.AppendLine("    iRst := gResetAlarm,");
                     _sb.AppendLine("    iLimit1 := " + x1Var + comma);
                     _sb.AppendLine("    iLimit2 := " + x2Var + comma);
-                    _sb.AppendLine("    iOnTO := " + timeoutVar + comma);
-                    _sb.AppendLine("    iOffTO := " + timeoutVar + comma);
+                    _sb.AppendLine("    iTimeOut := " + timeoutVar + comma);
+                    //_sb.AppendLine("    iOffTO := " + timeoutVar + comma);
                     _sb.AppendLine("    iOnDelay := " + onVar + comma);
                     _sb.AppendLine("    iOffDelay := " + offVar + comma);
                     if (IsWorks3)
