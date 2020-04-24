@@ -442,10 +442,17 @@ namespace PlcStGenerator
                 _sb.AppendLine(GenGroupDeclareString(tmp));
             }
 
-            // wSt1Cycle
+            // wSt1Index
             foreach (var item in datas)
             {
                 tmp = new DeclareData { Group = item, Prefix = "w", Postfix = "Index", Type = PlcVarType.Word };
+                _sb.AppendLine(GenGroupDeclareString(tmp));
+            }
+
+            // wSt1LastIndex
+            foreach (var item in datas)
+            {
+                tmp = new DeclareData { Group = item, Prefix = "w", Postfix = "LastIndex", Type = PlcVarType.Word };
                 _sb.AppendLine(GenGroupDeclareString(tmp));
             }
 
@@ -500,7 +507,7 @@ namespace PlcStGenerator
                     item.Group +
                     item.Postfix +
                     tabChar +
-                    item.Type +
+                    GenRealDataType(item.Type) +
                     tabChar +
                     varGlobal;
             }
@@ -513,7 +520,7 @@ namespace PlcStGenerator
                     item.Group +
                     item.Postfix +
                     tabChar +
-                    item.Type;
+                    GenRealDataType(item.Type);
             }
 
             return result;
