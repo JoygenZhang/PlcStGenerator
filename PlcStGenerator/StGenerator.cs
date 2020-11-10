@@ -10,6 +10,7 @@ namespace PlcStGenerator
     {
         public static bool IsWorks3 { get; set; }
         public static bool BooleanAssignStyle { get; set; }
+        public static bool StructureFirst { get; set; }
 
         private static StringBuilder _sb = new StringBuilder();
 
@@ -86,12 +87,12 @@ namespace PlcStGenerator
                     //_sb.AppendLine("    SET(" + cyVar + ".oErrId = ErrCyBoth, F50);");
                     //_sb.AppendLine("END_IF;");
 
-                    _sb.AppendLine("    SET(" + cyVar + ".oErr, F"+ idx++.ToString() +");");
+                    _sb.AppendLine("    SET(" + cyVar + ".oErr, F" + idx++.ToString() + ");");
                     _sb.AppendLine();
                 }
                 else
                 {
-                    _sb.AppendLine("    SET(" + cyVar + ".oErr, S"+ idx++.ToString() +");");
+                    _sb.AppendLine("    SET(" + cyVar + ".oErr, S" + idx++.ToString() + ");");
 
                     //_sb.AppendLine("    SET(" + cyVar + ".oErrId = ErrCyOn, S900);");
                     //_sb.AppendLine("    SET(" + cyVar + ".oErrId = ErrCyOff, S900);");
@@ -214,10 +215,11 @@ namespace PlcStGenerator
                     _sb.AppendLine("    iRst := gResetAlarm,");
                     _sb.AppendLine("    iLimit1 := " + x1Var + comma);
                     _sb.AppendLine("    iLimit2 := " + x2Var + comma);
-                    _sb.AppendLine("    iTimeOut := " + timeoutVar + comma);
                     //_sb.AppendLine("    iOffTO := " + timeoutVar + comma);
                     _sb.AppendLine("    iOnDelay := " + onVar + comma);
                     _sb.AppendLine("    iOffDelay := " + offVar + comma);
+                    _sb.AppendLine("    iTimeOut := " + timeoutVar + comma);
+                    _sb.AppendLine("    iSafe := not M8000,");
                     if (IsWorks3)
                         _sb.AppendLine("    oDevice =>" + yVar + ");");
                     else
@@ -421,74 +423,109 @@ namespace PlcStGenerator
 
             DeclareData tmp = null;
 
-            // uiSt1Cycle
-            foreach (var item in datas)
+            if (StructureFirst == false)
             {
-                tmp = new DeclareData { Group = item, Prefix = "ui", Postfix = "Cycle" };
-                _sb.AppendLine(GenGroupDeclareString(tmp));
-            }
+                // uiSt1Cycle
+                foreach (var item in datas)
+                {
+                    tmp = new DeclareData { Group = item, Prefix = "ui", Postfix = "Cycle" };
+                    _sb.AppendLine(GenGroupDeclareString(tmp));
+                }
 
-            // St1Cycle
-            foreach (var item in datas)
-            {
-                tmp = new DeclareData { Group = item, Postfix = "Cycle" };
-                _sb.AppendLine(GenGroupDeclareString(tmp));
-            }
+                // St1Cycle
+                foreach (var item in datas)
+                {
+                    tmp = new DeclareData { Group = item, Postfix = "Cycle" };
+                    _sb.AppendLine(GenGroupDeclareString(tmp));
+                }
 
-            // autoSt1Cycle
-            foreach (var item in datas)
-            {
-                tmp = new DeclareData { Group = item, Prefix = "auto", Postfix = "Cycle" };
-                _sb.AppendLine(GenGroupDeclareString(tmp));
-            }
+                // autoSt1Cycle
+                foreach (var item in datas)
+                {
+                    tmp = new DeclareData { Group = item, Prefix = "auto", Postfix = "Cycle" };
+                    _sb.AppendLine(GenGroupDeclareString(tmp));
+                }
 
-            // wSt1Index
-            foreach (var item in datas)
-            {
-                tmp = new DeclareData { Group = item, Prefix = "w", Postfix = "Index", Type = PlcVarType.Word };
-                _sb.AppendLine(GenGroupDeclareString(tmp));
-            }
+                // wSt1Index
+                foreach (var item in datas)
+                {
+                    tmp = new DeclareData { Group = item, Prefix = "w", Postfix = "Index", Type = PlcVarType.Word };
+                    _sb.AppendLine(GenGroupDeclareString(tmp));
+                }
 
-            // wSt1LastIndex
-            foreach (var item in datas)
-            {
-                tmp = new DeclareData { Group = item, Prefix = "w", Postfix = "LastIndex", Type = PlcVarType.Word };
-                _sb.AppendLine(GenGroupDeclareString(tmp));
-            }
+                // wSt1LastIndex
+                foreach (var item in datas)
+                {
+                    tmp = new DeclareData { Group = item, Prefix = "w", Postfix = "LastIndex", Type = PlcVarType.Word };
+                    _sb.AppendLine(GenGroupDeclareString(tmp));
+                }
 
-            // uiSt1Reset
-            foreach (var item in datas)
-            {
-                tmp = new DeclareData { Group = item, Prefix = "ui", Postfix = "Reset" };
-                _sb.AppendLine(GenGroupDeclareString(tmp));
-            }
+                // uiSt1Reset
+                foreach (var item in datas)
+                {
+                    tmp = new DeclareData { Group = item, Prefix = "ui", Postfix = "Reset" };
+                    _sb.AppendLine(GenGroupDeclareString(tmp));
+                }
 
-            // St1InOrg
-            foreach (var item in datas)
-            {
-                tmp = new DeclareData { Group = item, Postfix = "InOrg" };
-                _sb.AppendLine(GenGroupDeclareString(tmp));
-            }
+                // St1InOrg
+                foreach (var item in datas)
+                {
+                    tmp = new DeclareData { Group = item, Postfix = "InOrg" };
+                    _sb.AppendLine(GenGroupDeclareString(tmp));
+                }
 
-            // St1CanGoNext
-            foreach (var item in datas)
-            {
-                tmp = new DeclareData { Group = item, Postfix = "CanGoNext" };
-                _sb.AppendLine(GenGroupDeclareString(tmp));
-            }
+                // St1CanGoNext
+                foreach (var item in datas)
+                {
+                    tmp = new DeclareData { Group = item, Postfix = "CanGoNext" };
+                    _sb.AppendLine(GenGroupDeclareString(tmp));
+                }
 
-            // St1GoNext
-            foreach (var item in datas)
-            {
-                tmp = new DeclareData { Group = item, Postfix = "GoNext" };
-                _sb.AppendLine(GenGroupDeclareString(tmp));
-            }
+                // St1GoNext
+                foreach (var item in datas)
+                {
+                    tmp = new DeclareData { Group = item, Postfix = "GoNext" };
+                    _sb.AppendLine(GenGroupDeclareString(tmp));
+                }
 
-            // St1GoNg
-            foreach (var item in datas)
+                // St1GoNg
+                foreach (var item in datas)
+                {
+                    tmp = new DeclareData { Group = item, Postfix = "GoNg" };
+                    _sb.AppendLine(GenGroupDeclareString(tmp));
+                }
+            }
+            else
             {
-                tmp = new DeclareData { Group = item, Postfix = "GoNg" };
-                _sb.AppendLine(GenGroupDeclareString(tmp));
+                // uiSt1Cycle
+                foreach (var item in datas)
+                {
+                    tmp = new DeclareData { Group = item, Prefix = "ui", Postfix = "Cycle" };
+                    _sb.AppendLine(GenGroupDeclareString(tmp));
+                }
+
+                // autoSt1Cycle
+                foreach (var item in datas)
+                {
+                    tmp = new DeclareData { Group = item, Prefix = "auto", Postfix = "Cycle" };
+                    _sb.AppendLine(GenGroupDeclareString(tmp));
+                }
+
+                // uiSt1Reset
+                foreach (var item in datas)
+                {
+                    tmp = new DeclareData { Group = item, Prefix = "ui", Postfix = "Reset" };
+                    _sb.AppendLine(GenGroupDeclareString(tmp));
+                }
+
+                // dsStation
+                foreach (var item in datas)
+                {
+                    tmp = new DeclareData { Group = item, Prefix = "g", Postfix = "" };
+                    tmp.Type = PlcVarType.dsStation;
+
+                    _sb.AppendLine(GenGroupDeclareString(tmp));
+                }
             }
             return _sb;
         }
@@ -560,14 +597,28 @@ namespace PlcStGenerator
 
             foreach (var item in srcGroups)
             {
-                _sb.AppendLine();
-                _sb.AppendLine("IF auto" + item + "Cycle THEN");
+                if (!StructureFirst)
+                {
+                    _sb.AppendLine();
+                    _sb.AppendLine("IF auto" + item + "Cycle THEN");
 
-                _sb.AppendLine("    " + GenBooleanAssign(item + "Cycle", true));
-                _sb.AppendLine("    w" + item + "Index := START_STEP;");
+                    _sb.AppendLine("    " + GenBooleanAssign(item + "Cycle", true));
+                    _sb.AppendLine("    w" + item + "Index := START_STEP;");
 
-                _sb.AppendLine("    " + GenBooleanAssign("auto" + item + "Cycle", false));
-                _sb.AppendLine("END_IF;");
+                    _sb.AppendLine("    " + GenBooleanAssign("auto" + item + "Cycle", false));
+                    _sb.AppendLine("END_IF;");
+                }
+                else
+                {
+                    _sb.AppendLine();
+                    _sb.AppendLine("IF auto" + item + "Cycle THEN");
+
+                    _sb.AppendLine("    " + GenBooleanAssign("g" + item + ".Cycle", true));
+                    _sb.AppendLine("    g" + item + ".Index := START_STEP;");
+
+                    _sb.AppendLine("    " + GenBooleanAssign("auto" + item + "Cycle", false));
+                    _sb.AppendLine("END_IF;");
+                }
             }
 
             foreach (var item in srcGroups)
@@ -583,7 +634,11 @@ namespace PlcStGenerator
                         x.Type == PlcVarType.FbCylinder2x1y) && (x.Group == item)
                     select x.Name;
 
-                _sb.AppendLine(item + "InOrg := ");
+                if (!StructureFirst)
+                    _sb.AppendLine(item + "InOrg := ");
+                else
+                    _sb.AppendLine("g" + item + ".InOrg := ");
+
                 foreach (var name in cys)
                 {
                     _sb.AppendLine("    cy" + item + name + ".oOff AND");
@@ -594,7 +649,11 @@ namespace PlcStGenerator
                     _sb.AppendLine("    M8000;");
 
                 _sb.AppendLine();
-                _sb.AppendLine(item + "CanGoNext := ");
+                if (!StructureFirst)
+                    _sb.AppendLine(item + "CanGoNext := ");
+                else
+                    _sb.AppendLine("g" + item + ".CanGoNext := ");
+
                 _sb.AppendLine("    NOT gSys.HasError AND");
                 foreach (var name in cys)
                 {
@@ -611,18 +670,37 @@ namespace PlcStGenerator
             foreach (var item in srcGroups)
             {
                 _sb.AppendLine();
-                _sb.AppendLine("IF " + item + "Cycle THEN");
-                _sb.AppendLine("    IF " + item + "GoNext AND " + item + "CanGoNext THEN");
-                _sb.AppendLine("        w" + item + "Index := w" + item + "Index + 10;");
-                _sb.AppendLine("        " + GenBooleanAssign(item + "GoNext", false));
-                _sb.AppendLine("    END_IF;");
-                _sb.AppendLine();
-                _sb.AppendLine("    IF " + item + "GoNg THEN");
-                _sb.AppendLine("        w" + item + "LastIndex := w" + item + "Index;");
-                _sb.AppendLine("        w" + item + "Index := NG_STEP;");
-                _sb.AppendLine("        " + GenBooleanAssign(item + "GoNg", false));
-                _sb.AppendLine("    END_IF;");
-                _sb.AppendLine("END_IF;");
+
+                if (!StructureFirst)
+                {
+                    _sb.AppendLine("IF " + item + "Cycle THEN");
+                    _sb.AppendLine("    IF " + item + "GoNext AND " + item + "CanGoNext THEN");
+                    _sb.AppendLine("        w" + item + "Index := w" + item + "Index + 10;");
+                    _sb.AppendLine("        " + GenBooleanAssign(item + "GoNext", false));
+                    _sb.AppendLine("    END_IF;");
+                    _sb.AppendLine();
+                    _sb.AppendLine("    IF " + item + "GoNg THEN");
+                    _sb.AppendLine("        w" + item + "LastIndex := w" + item + "Index;");
+                    _sb.AppendLine("        w" + item + "Index := NG_STEP;");
+                    _sb.AppendLine("        " + GenBooleanAssign(item + "GoNg", false));
+                    _sb.AppendLine("    END_IF;");
+                    _sb.AppendLine("END_IF;");
+                }
+                else
+                {
+                    _sb.AppendLine("IF g" + item + ".Cycle THEN");
+                    _sb.AppendLine("    IF g" + item + ".GoNext AND g" + item + ".CanGoNext THEN");
+                    _sb.AppendLine("        g" + item + ".Index := g" + item + ".Index + 10;");
+                    _sb.AppendLine("        " + GenBooleanAssign("g" + item + ".GoNext", false));
+                    _sb.AppendLine("    END_IF;");
+                    _sb.AppendLine();
+                    _sb.AppendLine("    IF g" + item + ".GoNg THEN");
+                    _sb.AppendLine("        g" + item + ".LastIndex := g" + item + ".Index;");
+                    _sb.AppendLine("        g" + item + ".Index := NG_STEP;");
+                    _sb.AppendLine("        " + GenBooleanAssign("g" + item + ".GoNg", false));
+                    _sb.AppendLine("    END_IF;");
+                    _sb.AppendLine("END_IF;");
+                }
             }
             _sb.AppendLine();
 
@@ -642,55 +720,112 @@ namespace PlcStGenerator
             var group = actList[0].Group;
 
             _sb.AppendLine();
-            _sb.AppendLine("IF " + group + "Cycle THEN");
-            _sb.AppendLine("    IF w" + group + "Index = OK_STEP THEN");
-            _sb.AppendLine("        " + GenBooleanAssign(group + "Cycle", false));
-            _sb.AppendLine("        w" + group + "Index := 0;");
-            _sb.AppendLine();
-            _sb.AppendLine("    ELSIF w" + group + "Index = NG_STEP THEN");
-            _sb.AppendLine("        IF " + group + "CanGoNext THEN");
-            _sb.AppendLine("            w" + group + "Index := w" + group + "LastIndex;");
-            _sb.AppendLine("            w" + group + "LastIndex := 0;");
-            _sb.AppendLine("        END_IF;");
-            _sb.AppendLine("    END_IF;");
+
+            if (!StructureFirst)
+            {
+                _sb.AppendLine("IF " + group + "Cycle THEN");
+                _sb.AppendLine("    IF w" + group + "Index = OK_STEP THEN");
+                _sb.AppendLine("        " + GenBooleanAssign(group + "Cycle", false));
+                _sb.AppendLine("        w" + group + "Index := 0;");
+                _sb.AppendLine();
+                _sb.AppendLine("    ELSIF w" + group + "Index = NG_STEP THEN");
+                _sb.AppendLine("        IF " + group + "CanGoNext THEN");
+                _sb.AppendLine("            w" + group + "Index := w" + group + "LastIndex;");
+                _sb.AppendLine("            w" + group + "LastIndex := 0;");
+                _sb.AppendLine("        END_IF;");
+                _sb.AppendLine("    END_IF;");
+            }
+            else
+            {
+                _sb.AppendLine("IF g" + group + ".Cycle THEN");
+                _sb.AppendLine("    IF g" + group + ".Index = OK_STEP THEN");
+                _sb.AppendLine("        " + GenBooleanAssign("g" + group + ".Cycle", false));
+                _sb.AppendLine("        g" + group + ".Index := 0;");
+                _sb.AppendLine();
+                _sb.AppendLine("    ELSIF g" + group + ".Index = NG_STEP THEN");
+                _sb.AppendLine("        IF g" + group + ".CanGoNext THEN");
+                _sb.AppendLine("            g" + group + ".Index := g" + group + ".LastIndex;");
+                _sb.AppendLine("            g" + group + ".LastIndex := 0;");
+                _sb.AppendLine("        END_IF;");
+                _sb.AppendLine("    END_IF;");
+            }
             _sb.AppendLine();
 
             var idx = 10;
-            _sb.AppendLine("    CASE w" + group + "Index OF");
+
+            if (!StructureFirst)
+            {
+                _sb.AppendLine("    CASE w" + group + "Index OF");
+            }
+            else
+            {
+                _sb.AppendLine("    CASE g" + group + ".Index OF");
+            }
+
             foreach (var item in actList)
             {
                 _sb.AppendLine("    " + idx.ToString() + ":");
-                if (string.Equals(item.Act, "ON", StringComparison.OrdinalIgnoreCase))
+                if (string.Equals(item.Name, "SPARE", StringComparison.OrdinalIgnoreCase))
                 {
                     _sb.Append(tabChar);
-                    _sb.AppendLine("    " + GenBooleanAssign("g" + group + item.Name, true));
-
-                    _sb.Append(tabChar);
-                    _sb.AppendLine("    IF cy" + group + item.Name + ".oOn THEN");
-                    _sb.Append(tabChar);
-                    _sb.AppendLine("        " + GenBooleanAssign(group + "GoNext", true));
-
-                    _sb.Append(tabChar);
-                    _sb.AppendLine("    ELSIF cy" + group + item.Name + ".oErr THEN");
-                    _sb.Append(tabChar);
-                    _sb.AppendLine("        " + GenBooleanAssign(group + "GoNg", true));
-                    _sb.Append(tabChar);
-                    _sb.AppendLine("    END_IF;");
+                    if (!StructureFirst)
+                        _sb.AppendLine("    " + GenBooleanAssign(group + "GoNext", true));
+                    else
+                        _sb.AppendLine("    " + GenBooleanAssign("g" + group + ".GoNext", true));
                 }
-                else if (string.Equals(item.Act, "OFF", StringComparison.OrdinalIgnoreCase))
+                else
                 {
-                    _sb.Append(tabChar);
-                    _sb.AppendLine("    " + GenBooleanAssign("g" + group + item.Name, false));
-                    _sb.Append(tabChar);
-                    _sb.AppendLine("    IF cy" + group + item.Name + ".oOff THEN");
-                    _sb.Append(tabChar);
-                    _sb.AppendLine("        " + GenBooleanAssign(group + "GoNext", true));
-                    _sb.Append(tabChar);
-                    _sb.AppendLine("    ELSIF cy" + group + item.Name + ".oErr THEN");
-                    _sb.Append(tabChar);
-                    _sb.AppendLine("        " + GenBooleanAssign(group + "GoNg", true));
-                    _sb.Append(tabChar);
-                    _sb.AppendLine("    END_IF;");
+                    if (string.Equals(item.Act, "ON", StringComparison.OrdinalIgnoreCase) || string.Equals(item.Act, "1"))
+                    {
+                        _sb.Append(tabChar);
+                        _sb.AppendLine("    " + GenBooleanAssign("g" + group + item.Name, true));
+
+                        _sb.Append(tabChar);
+                        _sb.AppendLine("    IF cy" + group + item.Name + ".oOn THEN");
+                        _sb.Append(tabChar);
+
+                        if (!StructureFirst)
+                            _sb.AppendLine("        " + GenBooleanAssign(group + "GoNext", true));
+                        else
+                            _sb.AppendLine("        " + GenBooleanAssign("g" + group + ".GoNext", true));
+
+                        _sb.Append(tabChar);
+                        _sb.AppendLine("    ELSIF cy" + group + item.Name + ".oErr THEN");
+                        _sb.Append(tabChar);
+
+                        if (!StructureFirst)
+                            _sb.AppendLine("        " + GenBooleanAssign(group + "GoNg", true));
+                        else
+                            _sb.AppendLine("        " + GenBooleanAssign("g" + group + ".GoNg", true));
+
+                        _sb.Append(tabChar);
+                        _sb.AppendLine("    END_IF;");
+                    }
+                    else if (string.Equals(item.Act, "OFF", StringComparison.OrdinalIgnoreCase) || string.Equals(item.Act, "0"))
+                    {
+                        _sb.Append(tabChar);
+                        _sb.AppendLine("    " + GenBooleanAssign("g" + group + item.Name, false));
+                        _sb.Append(tabChar);
+                        _sb.AppendLine("    IF cy" + group + item.Name + ".oOff THEN");
+                        _sb.Append(tabChar);
+
+                        if (!StructureFirst)
+                            _sb.AppendLine("        " + GenBooleanAssign(group + "GoNext", true));
+                        else
+                            _sb.AppendLine("        " + GenBooleanAssign("g" + group + ".GoNext", true));
+
+                        _sb.Append(tabChar);
+                        _sb.AppendLine("    ELSIF cy" + group + item.Name + ".oErr THEN");
+                        _sb.Append(tabChar);
+
+                        if (!StructureFirst)
+                            _sb.AppendLine("        " + GenBooleanAssign(group + "GoNg", true));
+                        else
+                            _sb.AppendLine("        " + GenBooleanAssign("g" + group + ".GoNg", true));
+
+                        _sb.Append(tabChar);
+                        _sb.AppendLine("    END_IF;");
+                    }
                 }
 
                 idx = idx + 10;

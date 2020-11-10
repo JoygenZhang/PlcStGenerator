@@ -23,6 +23,8 @@
         FbRotateTable,
         FbPartsFeeder,
 
+        dsStation,
+
         //FbCylinder0x1y,
         //FbCylinder1x1y,     // sensor at Origin point
         //FbCylinder1x1y_1,   // sensor at Act point

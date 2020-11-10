@@ -284,8 +284,13 @@ namespace PlcStGenerator
         private void radioButton4_CheckedChanged(object sender, EventArgs e)
         {
             var rb = sender as RadioButton;
-            if (rb.Checked)
-                StGenerator.BooleanAssignStyle = true;
+            StGenerator.BooleanAssignStyle = rb.Checked;
+        }
+
+        private void ckbStructureFirst_CheckedChanged(object sender, EventArgs e)
+        {
+            var chk = sender as CheckBox;
+            StGenerator.StructureFirst = chk.Checked;
         }
     }
 }
